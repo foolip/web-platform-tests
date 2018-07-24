@@ -53,6 +53,7 @@ python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts
 If you are behind a proxy, you also need to make sure the domains above are
 excluded from your proxy lookups.
 
+
 Running Tests Manually
 ======================
 
@@ -139,6 +140,7 @@ archive for your platform from
 Then extract `certutil[.exe]` from the tests.zip package and
 `libnss3[.so|.dll|.dynlib]` and put the former on your path and the latter on
 your library path.
+
 
 Command Line Tools
 ==================
