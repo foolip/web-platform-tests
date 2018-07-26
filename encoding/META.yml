@@ -2,3 +2,4 @@ spec: https://encoding.spec.whatwg.org/
 suggested_reviewers:
   - inexorabletash
   - annevk
+  - foolip
