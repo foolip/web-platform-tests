@@ -25,6 +25,7 @@ matrix:
       language: generic
       env: JOB=lint SCRIPT=tools/ci/ci_lint.sh
 script:
+  - python --version
   - ./tools/ci/run.sh
 cache:
   directories:
