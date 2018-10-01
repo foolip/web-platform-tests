@@ -93,7 +93,7 @@ matrix:
             - libappindicator1
             - fonts-liberation
   exclude:
-    - env:  # exclude empty env from the top-level above
+    - os: linux
   allow_failures:
     - env: JOB=build_css SCRIPT=css/build-css-testsuites.sh
 script:
