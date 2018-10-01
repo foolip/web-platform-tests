@@ -26,6 +26,8 @@ matrix:
       env: JOB=lint SCRIPT=tools/ci/ci_lint.sh
 script:
   - python --version
+  - sudo hdiutil attach Safari_12.0.1_for_macOS_High_Sierra_beta_1.dmg
+  - sudo installer -pkg "/Volumes/Safari 12.0.1 for High Sierra/Safari12.0.1HighSierra.pkg" -target /
   - /usr/libexec/PlistBuddy -c "print :CFBundleShortVersionString" /Applications/Safari.app/Contents/Info.plist
   - ./tools/ci/run.sh
 cache:
