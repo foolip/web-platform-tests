@@ -33,7 +33,6 @@ matrix:
         skip_cleanup: true
     - name: "lint"
       os: osx
-      python: "2.7"
       env: JOB=lint SCRIPT=tools/ci/ci_lint.sh
     - name: "update-built-tests.sh"
       os: linux
