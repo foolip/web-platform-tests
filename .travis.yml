@@ -26,6 +26,7 @@ matrix:
       env: JOB=lint SCRIPT=tools/ci/ci_lint.sh
 script:
   - python --version
+  - /usr/libexec/PlistBuddy -c "print :CFBundleShortVersionString" /Applications/Safari.app/Contents/Info.plist
   - ./tools/ci/run.sh
 cache:
   directories:
