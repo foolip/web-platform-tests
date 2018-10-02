@@ -3,8 +3,6 @@ osx_instance:
 
 task:
   script:
-    - pwd
-    - ls
     - sw_vers
     - python --version
     - bash cirrus.sh
