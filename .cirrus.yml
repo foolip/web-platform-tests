@@ -1,8 +1,5 @@
-container:
-  image: node:latest
-check_task:
-  node_modules_cache:
-    folder: node_modules
-    fingerprint_script: cat yarn.lock
-    populate_script: yarn install
-  script: yarn test
+osx_instance:
+  image: high-sierra-xcode-9.4.1
+
+task:
+  script: cirrus.sh
