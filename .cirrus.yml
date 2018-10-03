@@ -9,7 +9,7 @@ safari_task:
     - sudo hdiutil attach SafariTechnologyPreview.dmg
     - sudo installer -pkg "/Volumes/Safari Technology Preview/Safari Technology Preview.pkg" -target /
     # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
-    - safaridriver --enable # wrong safaridriver still OK?
+    - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
     - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
     #- security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem
     - ./tools/ci/install.sh
