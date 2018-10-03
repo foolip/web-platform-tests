@@ -17,6 +17,7 @@ before_install:
   - . ./tools/ci/before_install.sh
 install:
   - ./tools/ci/install.sh
+  - which virtualenv
 matrix:
   fast_finish: true
   include:
