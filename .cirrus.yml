@@ -2,8 +2,16 @@ osx_instance:
   image: high-sierra-xcode-9.4.1
 
 safari_task:
-  name: "infrastructure/ tests (Safari TP)"
-  script:
+  info_script:
     - sw_vers
     - python --version
-    - bash cirrus.sh
+  install_script:
+    - sudo hdiutil attach SafariTechnologyPreview.dmg
+    - sudo installer -pkg "/Volumes/Safari Technology Preview/Safari Technology Preview.pkg" -target /
+    # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
+    - safaridriver --enable # wrong safaridriver still OK?
+    - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
+    #- security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem
+    - ./tools/ci/install.sh
+  script:
+    - no_proxy='*' ./wpt run --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --install-fonts --log-wptreport=wpt_report.json safari infrastructure/
