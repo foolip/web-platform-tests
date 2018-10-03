@@ -9,7 +9,7 @@ safari_task:
     - sudo hdiutil attach tools/ci/SafariTechnologyPreview.dmg
     - sudo installer -pkg "/Volumes/Safari Technology Preview/Safari Technology Preview.pkg" -target /
     # source: https://github.com/bocoup/results-collection/blob/04116e0a52e891171236427ff348d8e52dd2d342/src/scripts/safari-enable-automation.sh
-    - ./tools/ci/safari-enable-automation.sh
+    - sudo ./tools/ci/safari-enable-automation.sh
     # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
     #- sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
     - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
