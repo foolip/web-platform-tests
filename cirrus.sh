@@ -9,6 +9,6 @@ sudo installer -pkg "/Volumes/Safari Technology Preview/Safari Technology Previe
 
 # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
 defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
-security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem
+#security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem
 
 no_proxy='*' ./wpt run --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --install-fonts --log-wptreport=wpt_report.json safari infrastructure/

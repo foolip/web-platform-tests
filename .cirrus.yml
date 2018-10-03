@@ -1,7 +1,8 @@
 osx_instance:
   image: high-sierra-xcode-9.4.1
 
-task:
+safari_task:
+  name: "infrastructure/ tests (Safari TP)"
   script:
     - sw_vers
     - python --version
