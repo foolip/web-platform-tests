@@ -21,55 +21,6 @@ else
   safaridriver_binary="/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver"
 fi
 
-# Create a session using a body which satisfies both the Selenium JSON Wire
-# protocol (for Safari 11.1 and earlier) and the W3C WebDriver protocol (for
-# Safari 12 and later).
-create_session() {
-  curl \
-    -X POST \
-    --verbose \
-    --data '{"capabilities":{},"desiredCapabilities":{}}' \
-    --fail \
-    http://localhost:9876/session
-}
-
-is_automation_enabled() {
-  "$safaridriver_binary" --port 9876 &
-  stp_pid=$!
-
-  # Pause until safaridriver's HTTP server is confirmed to be available.
-  # Although querying the `/status` endpoint would be the most explicit method,
-  # safaridriver for Safari version 11.1 and earlier does not support it [1].
-  # Instead, send a GET request to the `/session` endpoint, as a response code
-  # of 405 will reliably indicate that either implementation is ready.
-  #
-  # [1] https://developer.apple.com/documentation/webkit/macos_webdriver_commands_for_safari_11_1_and_earlier
-  while true ; do
-    status_code=$(curl \
-        --silent \
-        --output /dev/null \
-        --write-out '%{http_code}' \
-        http://localhost:9876/session \
-      || true)
-
-    if [ "$status_code" == "405" ]; then
-      break
-    fi
-
-    if ! kill -0 $stp_pid > /dev/null 2>&1; then
-      return 1
-    fi
-  done
-
-  create_session >&2
-  result=$?
-
-  kill -9 $stp_pid >&2
-  wait $stp_pid >&2 2> /dev/null
-
-  return $result
-}
-
 toggle_automation() {
   echo Toggling automation in Safari
 
