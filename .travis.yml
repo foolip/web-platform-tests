@@ -17,7 +17,6 @@ before_install:
   - . ./tools/ci/before_install.sh
 install:
   - ./tools/ci/install.sh
-  - brew install pstree
 matrix:
   fast_finish: true
   include:
@@ -26,10 +25,8 @@ matrix:
       language: generic
       env: JOB=lint SCRIPT=tools/ci/ci_lint.sh
 script:
-  - pstree
-  - sudo hdiutil attach tools/ci/SafariTechnologyPreview.dmg
-  - sudo installer -pkg "/Volumes/Safari Technology Preview/Safari Technology Preview.pkg" -target /
-  # source: https://github.com/bocoup/results-collection/blob/04116e0a52e891171236427ff348d8e52dd2d342/src/scripts/safari-enable-automation.sh
+  - brew tap homebrew/cask-versions
+  - brew cask install safari-technology-preview
   #- sudo ./tools/ci/safari-enable-automation.sh
   - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
   # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
