@@ -17,5 +17,6 @@ safari_task:
     #- security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem
     - sudo easy_install pip
     - RUN_JOB=1 sudo ./tools/ci/install.sh
+    - ./wpt make-hosts-file | sudo tee -a /etc/hosts
   script:
     - no_proxy='*' ./wpt run --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --install-fonts --log-wptreport=wpt_report.json safari infrastructure/
