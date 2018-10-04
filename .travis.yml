@@ -27,7 +27,6 @@ matrix:
 script:
   - brew tap foolip/homebrew-cask-versions
   - brew cask install safari-technology-preview
-  - ls "/Applications/Safari Technology Preview.app/Contents/MacOS/"
   #- sudo ./tools/ci/safari-enable-automation.sh
   - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
   # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md

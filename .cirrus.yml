@@ -3,8 +3,8 @@ osx_instance:
 
 safari_task:
   install_script:
-    - hdiutil attach tools/ci/SafariTechnologyPreview.dmg
-    - sudo installer -pkg "/Volumes/Safari Technology Preview/Safari Technology Preview.pkg" -target /
+    - brew tap foolip/homebrew-cask-versions
+    - brew cask install safari-technology-preview
     # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
     - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
     - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
