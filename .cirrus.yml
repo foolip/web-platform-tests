@@ -5,10 +5,11 @@ safari_task:
   install_script:
     # Use STP 65, as safaridriver is broken in 66
     - brew cask install brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/e73cea88817b781d59beb25fb2640681a1ef4da8/Casks/safari-technology-preview.rb
-    # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
+    # https://web-platform-tests.org/running-tests/safari.html
     - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
     - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
-    #- security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem
+    # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
+    - sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
     - sudo easy_install pip
     - RUN_JOB=1 sudo ./tools/ci/install.sh
     - ./wpt make-hosts-file | sudo tee -a /etc/hosts
