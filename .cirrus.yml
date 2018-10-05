@@ -15,4 +15,3 @@ safari_task:
     - ./wpt make-hosts-file | sudo tee -a /etc/hosts
   script:
     - no_proxy='*' ./wpt run --yes --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --install-fonts --metadata infrastructure/metadata/ --no-fail-on-unexpected --log-wptreport=wpt_report.json safari infrastructure/
-.json safari infrastructure/
