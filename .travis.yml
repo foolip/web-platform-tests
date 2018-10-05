@@ -33,8 +33,6 @@ script:
   - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
   #- security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem
   - ./wpt make-hosts-file | sudo tee -a /etc/hosts
-  - git fetch --tags
-  - ./wpt manifest-download
   - no_proxy='*' ./wpt run --yes --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --install-fonts --metadata infrastructure/metadata/ --no-fail-on-unexpected --log-wptreport=wpt_report.json safari infrastructure/
 
 cache:
