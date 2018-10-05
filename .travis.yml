@@ -25,8 +25,8 @@ matrix:
       language: generic
       env: JOB=lint SCRIPT=tools/ci/ci_lint.sh
 script:
-  - brew tap foolip/homebrew-cask-versions > /dev/null
-  - brew cask install safari-technology-preview
+  # Use STP 65, as safaridriver is broken in 66
+  - brew cask install brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/e73cea88817b781d59beb25fb2640681a1ef4da8/Casks/safari-technology-preview.rb
   #- sudo ./tools/ci/safari-enable-automation.sh
   - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
   # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md

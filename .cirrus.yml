@@ -3,8 +3,8 @@ osx_instance:
 
 safari_task:
   install_script:
-    - brew tap foolip/homebrew-cask-versions
-    - brew cask install safari-technology-preview
+    # Use STP 65, as safaridriver is broken in 66
+    - brew cask install brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/e73cea88817b781d59beb25fb2640681a1ef4da8/Casks/safari-technology-preview.rb
     # https://github.com/web-platform-tests/wpt/blob/master/docs/_running-tests/safari.md
     - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
     - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
