@@ -33,7 +33,7 @@ script:
   # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
   - sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
   - ./wpt make-hosts-file | sudo tee -a /etc/hosts
-  - no_proxy='*' ./wpt run --yes --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --install-fonts --metadata infrastructure/metadata/ --no-fail-on-unexpected --log-wptreport=wpt_report.json safari infrastructure/
+  - no_proxy='*' ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari infrastructure/
 
 cache:
   directories:
