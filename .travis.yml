@@ -9,6 +9,14 @@ before_install:
   - . ./tools/ci/before_install.sh
 install:
   - ./tools/ci/install.sh
+  # Use STP 65, as safaridriver is broken in 66
+  - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/e73cea88817b781d59beb25fb2640681a1ef4da8/Casks/safari-technology-preview.rb
+  # https://web-platform-tests.org/running-tests/safari.html
+  - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
+  - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
+  # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
+  - sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
+  - ./wpt make-hosts-file | sudo tee -a /etc/hosts
 matrix:
   # The use of `if` conditionals to exclude jobs from master should align with
   # jobs unconditionally listed by `./wpt test-jobs`, regardless of affected
@@ -18,18 +26,17 @@ matrix:
     - name: "infrastructure/ tests (Safari TP)"
       os: osx
       language: generic
-      env: JOB=lint SCRIPT=tools/ci/ci_lint.sh
-script:
-  # Use STP 65, as safaridriver is broken in 66
-  - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/e73cea88817b781d59beb25fb2640681a1ef4da8/Casks/safari-technology-preview.rb
-  # https://web-platform-tests.org/running-tests/safari.html
-  - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
-  - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
-  # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
-  - sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
-  - ./wpt make-hosts-file | sudo tee -a /etc/hosts
-  - no_proxy='*' ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari infrastructure/
-
+      env: no_proxy="*"
+      script:
+        - ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari infrastructure/
+    - name: "test results (Safari TP)"
+      os: osx
+      language: generic
+      env: no_proxy="*"
+      script:
+        - ./wpt run --yes --install-fonts --no-fail-on-unexpected --log-wptreport=../wpt_report.json --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari service-workers/
+        - echo "wpt_report.json gzipped and base64-encoded:"
+        - cat ../wpt_report.json | gzip -9 | base64 -b 80
 cache:
   directories:
     - $HOME/.cache/pip
