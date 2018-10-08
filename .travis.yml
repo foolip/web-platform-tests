@@ -4,20 +4,15 @@ language: python
 branches:
   only:
     - master
-addons:
-  hosts:
-    - web-platform.test
-    - www.web-platform.test
-    - www1.web-platform.test
-    - www2.web-platform.test
-    - xn--n8j6ds53lwwkrqhv28a.web-platform.test
-    - xn--lve-6lad.web-platform.test
 before_install:
   # This needs be sourced as it sets various env vars
   - . ./tools/ci/before_install.sh
 install:
   - ./tools/ci/install.sh
 matrix:
+  # The use of `if` conditionals to exclude jobs from master should align with
+  # jobs unconditionally listed by `./wpt test-jobs`, regardless of affected
+  # paths. (The reverse is not true, as the manifest job could run on PRs too.)
   fast_finish: true
   include:
     - name: "infrastructure/ tests (Safari TP)"
