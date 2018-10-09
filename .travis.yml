@@ -28,13 +28,13 @@ matrix:
       language: generic
       env: no_proxy="*"
       script:
-        - ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari infrastructure/
+        - ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver infrastructure/
     - name: "test results (Safari TP)"
       os: osx
       language: generic
       env: no_proxy="*"
       script:
-        - ./wpt run --yes --install-fonts --no-restart-on-unexpected --no-fail-on-unexpected --log-unittest - --log-wptreport=../wpt_report.json --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari shadow-dom/
+        - ./wpt run --yes --install-fonts --no-restart-on-unexpected --no-fail-on-unexpected --log-unittest - --log-wptreport=../wpt_report.json --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver shadow-dom/
         - ./tools/ci/ci_report.sh ../wpt_report.json
 cache:
   directories:
