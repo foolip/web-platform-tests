@@ -34,7 +34,7 @@ matrix:
       language: generic
       env: no_proxy="*"
       script:
-        - ./wpt run --yes --install-fonts --no-fail-on-unexpected --log-wptreport=../wpt_report.json --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari service-workers/
+        - ./wpt run --yes --install-fonts --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=../wpt_report.json --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari shadow-dom/
         - echo "wpt_report.json gzipped and base64-encoded:"
         - cat ../wpt_report.json | gzip -9 | base64 -b 80
 cache:
