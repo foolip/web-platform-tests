@@ -3,9 +3,9 @@ set -ex
 
 which pip || sudo easy_install pip
 
-pip install -U setuptools
-pip install -U requests
-pip install -U virtualenv
+sudo pip install -U setuptools
+sudo pip install -U requests
+sudo pip install -U virtualenv
 
 # Use STP 65, as safaridriver is broken in 66
 HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/e73cea88817b781d59beb25fb2640681a1ef4da8/Casks/safari-technology-preview.rb
