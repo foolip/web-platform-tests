@@ -1,17 +1,20 @@
 osx_instance:
   image: high-sierra-xcode-9.4.1
 
-safari_task:
+task:
+  matrix:
+    - name: infrastructure/ tests (Safari Technology Preview)
   install_script:
-    # Use STP 65, as safaridriver is broken in 66
-    - HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask-versions/e73cea88817b781d59beb25fb2640681a1ef4da8/Casks/safari-technology-preview.rb
-    # https://web-platform-tests.org/running-tests/safari.html
-    - sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
-    - defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
-    # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
-    - sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
-    - sudo easy_install pip
-    - RUN_JOB=1 sudo ./tools/ci/install.sh
-    - ./wpt make-hosts-file | sudo tee -a /etc/hosts
+    - ./tools/ci/install.sh
   script:
-    - no_proxy='*' ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari infrastructure/
+    - no_proxy='*' ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver infrastructure/
+
+task:
+  matrix:
+    - name: test results (Safari Technology Preview)
+  install_script:
+    - ./tools/ci/install.sh
+  script:
+    - no_proxy='*' ./wpt run --yes --install-fonts --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=../wpt_report.json --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver shadow-dom/
+  report_script:
+    - ./tools/ci/ci_report.sh ../wpt_report.json
