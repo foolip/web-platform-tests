@@ -9,3 +9,6 @@ jobs:
   steps:
   - script: ./tools/ci/install.sh
     displayName: 'Install Safari Technology Preview'
+
+  - script: no_proxy='*' ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver infrastructure/
+    displayName: 'infrastructure/ tests'
