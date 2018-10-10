@@ -1,0 +1,11 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
+
+jobs:
+- job: macOS
+
+  pool:
+    vmImage: 'macOS 10.13'
+
+  steps:
+  - script: ./tools/ci/install.sh
+    displayName: 'Install Safari Technology Preview'
