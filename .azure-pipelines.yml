@@ -12,3 +12,6 @@ jobs:
 
   - script: no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver infrastructure/
     displayName: 'infrastructure/ tests'
+
+  - script: no_proxy='*' ./wpt run --yes --install-fonts --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=../wpt_report.json --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver quirks/
+    displayName: 'quirks/ tests'
