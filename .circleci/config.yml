@@ -1,0 +1,7 @@
+jobs:
+  build:
+    macos:
+      xcode: "10.0.0"
+
+    steps:
+      - run: sw_vers
