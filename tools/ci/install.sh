@@ -15,3 +15,6 @@ defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
 # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
 sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
 ./wpt make-hosts-file | sudo tee -a /etc/hosts
+
+# https://github.com/web-platform-tests/results-collection/issues/218 workaround
+sudo cp fonts/Ahem.ttf /Library/Fonts
