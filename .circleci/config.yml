@@ -5,5 +5,4 @@ jobs:
 
     steps:
       - run: sw_vers
-      - run: ls /Applications
-      - run: sudo echo make me a sandwich
+      - run: ./tools/ci/install.sh
