@@ -7,8 +7,7 @@ sudo pip install -U setuptools
 sudo pip install -U requests
 sudo pip install -U virtualenv
 
-# Use STP 67 from https://github.com/Homebrew/homebrew-cask-versions/pull/6387
-HOMEBREW_NO_AUTO_UPDATE=1 brew cask install https://raw.githubusercontent.com/foolip/homebrew-cask-versions/76c403677df031d2111d76d011dd459c0e8389d2/Casks/safari-technology-preview.rb
+HOMEBREW_NO_AUTO_UPDATE=1 brew cask install Homebrew/homebrew-cask-versions/safari-technology-preview
 # https://web-platform-tests.org/running-tests/safari.html
 sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
 defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
