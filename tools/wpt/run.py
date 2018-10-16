@@ -436,6 +436,7 @@ product_setup = {
     "safari": Safari,
     "safari_webdriver": SafariWebDriver,
     "servo": Servo,
+    "servodriver": Servo,
     "sauce": Sauce,
     "opera": Opera,
     "webkit": WebKit,
@@ -444,6 +445,7 @@ product_setup = {
 
 def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     from wptrunner import wptrunner, wptcommandline
+    import mozlog
 
     global logger
 
@@ -453,7 +455,12 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     kwargs["product"] = product_parts[0]
     sub_product = product_parts[1:]
 
-    wptrunner.setup_logging(kwargs, {"mach": sys.stdout})
+    # Use the grouped formatter by default where mozlog 3.9+ is installed
+    if hasattr(mozlog.formatters, "GroupingFormatter"):
+        default_formatter = "grouped"
+    else:
+        default_formatter = "mach"
+    wptrunner.setup_logging(kwargs, {default_formatter: sys.stdout})
     logger = wptrunner.logger
 
     check_environ(kwargs["product"])
@@ -471,10 +478,13 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
 
     if kwargs["channel"]:
         channel = install.get_channel(kwargs["product"], kwargs["channel"])
-        if channel != kwargs["channel"]:
-            logger.info("Interpreting channel '%s' as '%s'" % (kwargs["channel"],
-                                                               channel))
-        kwargs["browser_channel"] = channel
+        if channel is not None:
+            if channel != kwargs["channel"]:
+                logger.info("Interpreting channel '%s' as '%s'" % (kwargs["channel"],
+                                                                   channel))
+                kwargs["browser_channel"] = channel
+        else:
+            logger.info("Valid channels for %s not known; using argument unmodified" % kwargs["product"])
     del kwargs["channel"]
 
     if install_browser:
