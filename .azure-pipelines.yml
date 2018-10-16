@@ -7,7 +7,9 @@ jobs:
     vmImage: 'macOS 10.13'
 
   steps:
-  - script: ./tools/ci/install.sh
+  - script: |
+      sw_vers
+      ./tools/ci/install.sh
     displayName: 'Install Safari Technology Preview'
 
   - script: |

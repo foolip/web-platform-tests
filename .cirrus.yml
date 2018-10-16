@@ -5,6 +5,7 @@ task:
   matrix:
     - name: infrastructure/ tests (Safari Technology Preview)
   install_script:
+    - sw_vers
     - ./tools/ci/install.sh
   script:
     - no_proxy='*' ./wpt run --yes --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari_webdriver infrastructure/

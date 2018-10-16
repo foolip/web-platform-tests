@@ -8,6 +8,7 @@ before_install:
   # This needs be sourced as it sets various env vars
   - . ./tools/ci/before_install.sh
 install:
+  - sw_vers
   - ./tools/ci/install.sh
 matrix:
   # The use of `if` conditionals to exclude jobs from master should align with
