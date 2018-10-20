@@ -1,5 +1,9 @@
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
 
+trigger:
+  branches:
+    include: master
+
 jobs:
 - job: macOS
 
