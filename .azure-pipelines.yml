@@ -1,0 +1,22 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
+
+jobs:
+- job: macOS
+
+  pool:
+    vmImage: 'macOS 10.13'
+
+  steps:
+  - script: |
+      sw_vers
+      ./tools/ci/install.sh
+    displayName: 'Install Safari Technology Preview'
+
+  - script: |
+      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
+      # fail if safaridriver was left running (killall fails if it's not running)
+      killall -0 safaridriver 2> /dev/null && echo "ERROR: safaridriver left running" && exit 1
+    displayName: 'infrastructure/ tests'
+
+  - script: no_proxy='*' ./wpt run --yes --no-pause --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=../wpt_report.json --channel=preview safari_webdriver quirks/
+    displayName: 'quirks/ tests'
