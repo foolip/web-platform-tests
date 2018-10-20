@@ -12,6 +12,9 @@ jobs:
       ./tools/ci/install.sh
     displayName: 'Install Safari Technology Preview'
 
+  - script: ./tools/ci/safaridriver_status.sh
+    displayName: 'SafariDriver status'
+
   - script: |
       no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
       # fail if safaridriver was left running (killall fails if it's not running)
