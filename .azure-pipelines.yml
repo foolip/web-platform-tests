@@ -24,6 +24,7 @@ jobs:
       sw_vers
       env
       ./tools/ci/install.sh
+      git log --decorate --oneline --max-count 1000
     displayName: 'Install Safari Technology Preview'
 
   - script: ./tools/ci/safaridriver_status.sh
