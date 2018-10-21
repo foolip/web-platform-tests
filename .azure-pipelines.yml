@@ -59,6 +59,7 @@ jobs:
     # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifacts'
+    condition: succeededOrFailed()
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: 'artifacts'
