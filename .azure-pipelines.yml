@@ -12,6 +12,10 @@ jobs:
     vmImage: 'macOS-10.13'
 
   steps:
+  - checkout: self
+    fetchDepth: 50
+    submodules: false
+
   - script: |
       ./wpt test-jobs | while read job; do echo "##vso[task.setvariable variable=run_$job]true"; done
     displayName: './wpt test-jobs'
