@@ -13,7 +13,13 @@ jobs:
 
   steps:
   - script: |
+      ./wpt test-jobs | while read job; do echo "##vso[task.setvariable variable=run_$job]true"; done
+    displayName: './wpt test-jobs'
+    name: testjobs
+
+  - script: |
       sw_vers
+      echo $RUN_LINT
       ./tools/ci/install.sh
     displayName: 'Install Safari Technology Preview'
 
