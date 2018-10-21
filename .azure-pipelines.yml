@@ -18,31 +18,28 @@ jobs:
 
   - script: |
       ./wpt test-jobs | while read job; do echo "##vso[task.setvariable variable=run_$job]true"; done
-    displayName: './wpt test-jobs'
+    displayName: 'Run ./wpt test-jobs'
 
   - script: |
-      sw_vers
-      env
       ./tools/ci/install.sh
-      git log --decorate --oneline --max-count 1000
+    condition: eq(variables['Run.Manifest'],
     displayName: 'Install Safari Technology Preview'
 
-  - script: ./tools/ci/safaridriver_status.sh
-    displayName: 'SafariDriver status'
+  - script: |
+      ./wpt manifest --manifest MANIFEST.json
+      # publish the manifest as an artifact
+      cp MANIFEST.json $(Build.ArtifactStagingDirectory)
+    displayName: 'Update manifest'
 
   - script: |
-      #no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
+      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --no-manifest-update --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
       # fail if safaridriver was left running (killall fails if it's not running)
       #killall -0 safaridriver 2> /dev/null && echo "ERROR: safaridriver left running" && exit 1
-    displayName: 'infrastructure/ tests'
+    displayName: 'Run infrastructure/ tests'
 
-  - script: |
-      ls $(Build.ArtifactStagingDirectory)
-      touch $(Build.ArtifactStagingDirectory)/foo
-    displayName: 'artifacts tests'
-
-  # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts?view=vsts
+  # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts
   - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifacts'
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'things'
+      artifactName: 'artifacts'
