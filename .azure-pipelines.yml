@@ -1,0 +1,65 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
+
+trigger:
+  branches:
+    include:
+    - master
+
+jobs:
+- job: macOS
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  steps:
+  - checkout: self
+    fetchDepth: 50
+    submodules: false
+
+  - script: |
+      echo "Branch point:"
+      ./wpt branch-point
+      git merge-base origin/master HEAD
+      echo
+      echo "Test jobs:"
+      ./wpt test-jobs | tee test-jobs.txt
+      echo
+      echo "Affected tests:"
+      ./wpt tests-affected | tee tests-affected.txt
+      cat test-jobs.txt | while read job; do echo "##vso[task.setvariable variable=run_$job]true"; done
+      [ -s tests-affected.txt ] && echo "##vso[task.setvariable variable=run_affected_tests]true"
+      # Note: `./wpt tests-affected` creates MANIFEST.json as a side effect.
+      cp MANIFEST.json tests-affected.txt test-jobs.txt $(Build.ArtifactStagingDirectory)
+    displayName: 'List affected jobs and tests'
+
+  - script: |
+      ./tools/ci/install.sh
+    displayName: 'Install Safari Technology Preview'
+    condition: or(variables.run_wptrunner_infrastructure, variables.run_affected_tests)
+
+  - script: |
+      no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
+    displayName: 'Run infrastructure/ tests'
+    condition: variables.run_wptrunner_infrastructure
+
+  - script: |
+      no_proxy='*' ./wpt run --yes --no-manifest-update --no-pause --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=$(Build.ArtifactStagingDirectory)/wpt_report.json --channel=preview safari_webdriver `cat tests-affected.txt`
+    displayName: 'Run affected tests'
+    condition: variables.run_affected_tests
+
+  - script: |
+      git checkout `./wpt branch-point`
+      # No --no-manifest-update because it does have to be updated now.
+      no_proxy='*' ./wpt run --yes --no-pause --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=$(Build.ArtifactStagingDirectory)/wpt_report_without_changes.json --channel=preview safari_webdriver `cat tests-affected.txt`
+      cp MANIFEST.json $(Build.ArtifactStagingDirectory)/MANIFEST_without_changes.json
+    displayName: 'Run affected tests (without changes)'
+    condition: variables.run_affected_tests
+    continueOnError: true
+
+    # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifacts'
+    condition: succeededOrFailed()
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'artifacts'
