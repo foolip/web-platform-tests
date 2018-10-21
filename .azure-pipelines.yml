@@ -22,7 +22,7 @@ jobs:
 
   - script: |
       ./tools/ci/install.sh
-    condition: eq(variables['Run.Manifest'],
+    condition: eq(variables['Run.Manifest'], 'true')
     displayName: 'Install Safari Technology Preview'
 
   - script: |
