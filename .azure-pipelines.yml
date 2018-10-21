@@ -22,20 +22,22 @@ jobs:
 
   - script: |
       ./tools/ci/install.sh
-    condition: eq(variables['Run.Manifest'], 'true')
     displayName: 'Install Safari Technology Preview'
+    condition: eq(variables.run_wptrunner_infrastructure, 'true')
 
   - script: |
-      ./wpt manifest --manifest MANIFEST.json
+      ./wpt manifest
       # publish the manifest as an artifact
       cp MANIFEST.json $(Build.ArtifactStagingDirectory)
     displayName: 'Update manifest'
+    condition: eq(variables.run_wptrunner_infrastructure, 'true')
 
   - script: |
       no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --no-manifest-update --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
       # fail if safaridriver was left running (killall fails if it's not running)
       #killall -0 safaridriver 2> /dev/null && echo "ERROR: safaridriver left running" && exit 1
     displayName: 'Run infrastructure/ tests'
+    condition: eq(variables.run_wptrunner_infrastructure, 'true')
 
   # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts
   - task: PublishBuildArtifacts@1
