@@ -7,47 +7,7 @@ trigger:
     - master
 
 jobs:
-- job: Linux
-
-  pool:
-    vmImage: 'ubuntu-16.04'
-
-  steps:
-  - checkout: self
-    fetchDepth: 50
-    submodules: false
-
-  - script: |
-      echo "Test jobs:"
-      ./wpt test-jobs | while read job; do
-        echo "$job"
-        echo "##vso[task.setvariable variable=run_$job;isOutput=true]true";
-      done
-    displayName: './wpt test-jobs'
-    name: test_jobs
-
-  - script: |
-      # TODO: `./wpt tests-affected --no-manifest-update` or teach
-      #       `./wpt tests-affected` to download if possible.
-      ./wpt manifest
-      ./wpt tests-affected > tests-affected.txt
-      if [ -s tests-affected.txt ]; then
-        echo "##vso[task.setvariable variable=run_affected_tests;isOutput=true]true"
-        echo "Affected tests:"
-        cat tests-affected.txt
-      else
-        echo "No affected tests"
-      fi
-    displayName: './wpt tests-affected'
-    name: tests_affected
-
 - job: macOS
-  dependsOn: Linux
-  condition: or(dependencies.Linux.outputs['test_jobs.run_wptrunner_infrastructure'], dependencies.Linux.outputs['tests_affected.run_affected_tests'])
-
-  variables:
-    run_wptrunner_infrastructure: $[ dependencies.Linux.outputs['test_jobs.run_wptrunner_infrastructure'] ]
-    run_affected_tests: $[ dependencies.Linux.outputs['tests_affected.run_affected_tests'] ]
 
   pool:
     vmImage: 'macOS-10.13'
@@ -58,12 +18,32 @@ jobs:
     submodules: false
 
   - script: |
+      echo "Test jobs:"
+      ./wpt test-jobs | tee test-jobs.txt
+      cat test-jobs.txt | while read job; do echo "##vso[task.setvariable variable=run_$job]true"; done
+      rm test-jobs.txt
+    displayName: 'List test jobs'
+
+  - script: |
       ./wpt manifest
     displayName: 'Update manifest'
+    # stability is used as a proxy for whether there may be affected tests
+    condition: or(variables.run_wptrunner_infrastructure, variables.run_stability)
+
+  - script: |
+      echo "Affected tests:"
+      # TODO: `./wpt tests-affected --no-manifest-update`
+      ./wpt tests-affected | tee tests-affected.txt
+      # avoid running some later steps if there are no affected tests.
+      [ -s tests-affected.txt ] && echo "##vso[task.setvariable variable=run_affected_tests]true"
+      mv tests-affected.txt ..
+    displayName: 'List affected tests'
+    condition: variables.run_stability
 
   - script: |
       ./tools/ci/install.sh
     displayName: 'Install Safari Technology Preview'
+    condition: or(variables.run_wptrunner_infrastructure, variables.run_affected_tests)
 
   - script: |
       no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
