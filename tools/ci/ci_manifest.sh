@@ -1,6 +1,7 @@
 set -ex
 
-WPT_ROOT=$(cd $(dirname "$0")/../.. && pwd -P)
+SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+WPT_ROOT=$(readlink -f $SCRIPT_DIR/../..)
 cd $WPT_ROOT
 
 mkdir -p ~/meta
