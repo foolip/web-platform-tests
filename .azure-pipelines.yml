@@ -23,7 +23,7 @@ jobs:
       rm test-jobs.txt
     displayName: 'List test jobs'
 
-   - script: |
+  - script: |
       ./wpt manifest
     displayName: 'Update manifest'
     # stability is used as a proxy for whether there may be affected tests
