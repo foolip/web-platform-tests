@@ -6,6 +6,43 @@ trigger:
     - master
 
 jobs:
+- job: Linux
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - checkout: self
+    fetchDepth: 50
+    submodules: false
+
+  - script: |
+      echo "Test jobs:"
+      ./wpt test-jobs | while read job; do
+        echo "$job"
+        echo "##vso[task.setvariable variable=run_$job]true";
+      done
+    displayName: './wpt test-jobs'
+
+  - script: |
+      echo "Affected tests:"
+      # TODO: `./wpt tests-affected --no-manifest-update`
+      ./wpt tests-affected | tee tests-affected.txt
+      # avoid running some later steps if there are no affected tests.
+      [ -s tests-affected.txt ] && echo "##vso[task.setvariable variable=run_affected_tests]true"
+      mv tests-affected.txt ..
+    displayName: './wpt tests-affected'
+    # stability is used as a proxy for whether there may be affected tests
+    condition: variables.run_stability
+
+  - script: |
+      ./wpt manifest
+      cp MANIFEST.json $(Build.ArtifactStagingDirectory)
+    displayName: './wpt manifest'
+    condition: or(variables.run_wptrunner_infrastructure, variables.run_affected_tests)
+
+  - task: PublishBuildArtifacts@1
+
 - job: macOS
 
   pool:
