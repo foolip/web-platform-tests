@@ -26,12 +26,17 @@ jobs:
     displayName: './wpt test-jobs'
 
   - script: |
-      echo "Affected tests:"
       # TODO: `./wpt tests-affected --no-manifest-update` or teach
       #       `./wpt tests-affected` to download if possible.
       ./wpt manifest
-      ./wpt tests-affected | tee tests-affected.txt
-      [ -s tests-affected.txt ] && echo "##vso[task.setvariable variable=run_affected_tests;isOutput=true]true"
+      ./wpt tests-affected > tests-affected.txt
+      if [ -s tests-affected.txt ]; then
+        echo "##vso[task.setvariable variable=run_affected_tests;isOutput=true]true"
+        echo "Affected tests:"
+        cat tests-affected.txt
+      else
+        echo "No affected tests"
+      fi
     displayName: './wpt tests-affected'
 
 - job: macOS
