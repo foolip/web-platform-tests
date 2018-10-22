@@ -45,6 +45,10 @@ jobs:
   dependsOn: Linux
   condition: or(dependencies.Linux.outputs['test_jobs.run_wptrunner_infrastructure'], dependencies.Linux.outputs['tests_affected.run_affected_tests'])
 
+  variables:
+    run_wptrunner_infrastructure: $[ dependencies.Linux.outputs['test_jobs.run_wptrunner_infrastructure'] ]
+    run_affected_tests: $[ dependencies.Linux.outputs['tests_affected.run_affected_tests'] ]
+
   pool:
     vmImage: 'macOS-10.13'
 
@@ -64,13 +68,13 @@ jobs:
   - script: |
       no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
     displayName: 'Run infrastructure/ tests'
-    condition: dependencies.Linux.outputs['test_jobs.run_wptrunner_infrastructure']
+    condition: variables.run_wptrunner_infrastructure
 
   - script: |
       # TODO: https://github.com/web-platform-tests/wpt/issues/13564 here and below
       no_proxy='*' ./wpt run --yes --no-manifest-update --no-pause --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=$(Build.ArtifactStagingDirectory)/wpt_report.json --channel=preview safari_webdriver `cat ../tests-affected.txt`
     displayName: 'Run affected tests'
-    condition: dependencies.Linux.outputs['tests_affected.run_affected_tests']
+    condition: variables.run_affected_tests
 
   - script: |
       git checkout --force `./wpt branch-point`
@@ -78,7 +82,7 @@ jobs:
       # TODO: map renamed files in tests-affected.txt, or run `./wpt tests-affected HEAD@{1}`
       no_proxy='*' ./wpt run --yes --no-pause --no-restart-on-unexpected --no-fail-on-unexpected --log-wptreport=$(Build.ArtifactStagingDirectory)/wpt_report_without_changes.json --channel=preview safari_webdriver `cat ../tests-affected.txt`
     displayName: 'Run affected tests (without changes)'
-    condition: dependencies.Linux.outputs['tests_affected.run_affected_tests']
+    condition: variables.run_affected_tests
     continueOnError: true
 
     # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts
