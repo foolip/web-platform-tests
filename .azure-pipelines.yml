@@ -28,6 +28,6 @@ jobs:
     condition: variables.run_wptrunner_infrastructure
 
   - script: |
-      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
+      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level=debug --channel=preview safari_webdriver infrastructure/
     displayName: 'Run infrastructure/ tests'
     condition: variables.run_wptrunner_infrastructure
