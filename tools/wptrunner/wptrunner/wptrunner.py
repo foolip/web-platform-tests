@@ -277,8 +277,9 @@ def run_tests(config, test_paths, product, **kwargs):
                             logger.critical("Main thread got signal")
                             manager_group.stop()
                             raise
-                    test_count += manager_group.test_count()
-                    unexpected_count += manager_group.unexpected_count()
+                        logger.info("manager_group counts: %d / %d" % (manager_group.test_count(), manager_group.unexpected_count()))
+                        test_count += manager_group.test_count()
+                        unexpected_count += manager_group.unexpected_count()
 
                 test_total += test_count
                 unexpected_total += unexpected_count
