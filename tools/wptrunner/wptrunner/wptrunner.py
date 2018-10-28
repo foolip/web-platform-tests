@@ -240,6 +240,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     for test in test_loader.disabled_tests[test_type]:
                         logger.test_start(test.id)
                         logger.test_end(test.id, status="SKIP")
+                        logger.info("Skipping tests at location #1")
                         skipped_tests += 1
 
                     if test_type == "testharness":
@@ -249,6 +250,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                     test.jsshell and not executor_cls.supports_jsshell):
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")
+                                logger.info("Skipping tests at location #2")
                                 skipped_tests += 1
                             else:
                                 run_tests["testharness"].append(test)
@@ -287,7 +289,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
     if test_total == 0:
         if skipped_tests > 0:
-            logger.warning("All requested tests were skipped")
+            logger.warning("All requested tests were skipped (%d)" % skipped_tests)
         else:
             logger.error("No tests ran")
             return False
