@@ -23,8 +23,35 @@ jobs:
     displayName: 'List test jobs'
 
   - script: |
-      ./tools/ci/install.sh
+      sudo easy_install pip
+      sudo pip install setuptools
+      sudo pip install requests
+      sudo pip install virtualenv
+    displayName: 'Install Python packages'
+    condition: variables.run_wptrunner_infrastructure
+
+  - script: |
+      sudo cp fonts/Ahem.ttf /Library/Fonts
+    displayName: 'Install Ahem font'
+    condition: variables.run_wptrunner_infrastructure
+
+  - script: |
+      # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
+      sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
+    displayName: 'Install web-platform.test certificate'
+    condition: variables.run_wptrunner_infrastructure
+
+  - script: |
+      HOMEBREW_NO_AUTO_UPDATE=1 brew cask install Homebrew/homebrew-cask-versions/safari-technology-preview
+      # https://web-platform-tests.org/running-tests/safari.html
+      sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
+      defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
     displayName: 'Install Safari Technology Preview'
+    condition: variables.run_wptrunner_infrastructure
+
+  - script: |
+      ./wpt make-hosts-file | sudo tee -a /etc/hosts
+    displayName: 'Update /etc/hosts'
     condition: variables.run_wptrunner_infrastructure
 
   - script: |
