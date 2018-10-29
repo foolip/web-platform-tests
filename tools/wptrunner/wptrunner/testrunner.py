@@ -376,6 +376,7 @@ class TestRunnerManager(threading.Thread):
                 clean = isinstance(self.state, RunnerManagerState.stop)
                 self.stop_runner(force=not clean)
                 self.teardown()
+        # bug: this is not reached in the exception case
         self.logger.debug("TestRunnerManager main loop terminated")
 
     def wait_event(self):
