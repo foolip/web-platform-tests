@@ -168,6 +168,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
+        clean_exit = True
         skipped_tests = 0
         test_total = 0
         unexpected_total = 0
@@ -283,6 +284,9 @@ def run_tests(config, test_paths, product, **kwargs):
                         logger.info("manager_group counts: %d / %d" % (manager_group.test_count(), manager_group.unexpected_count()))
                         test_count += manager_group.test_count()
                         unexpected_count += manager_group.unexpected_count()
+                        if not manager_group.clean_exit():
+                            logger.error("Something did not exit cleanly")
+                            clean_exit = False
 
                 test_total += test_count
                 unexpected_total += unexpected_count
@@ -290,6 +294,9 @@ def run_tests(config, test_paths, product, **kwargs):
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
                 logger.suite_end()
+
+    if not clean_exit:
+        return False
 
     if test_total == 0:
         if skipped_tests > 0:

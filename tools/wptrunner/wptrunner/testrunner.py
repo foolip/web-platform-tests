@@ -308,6 +308,7 @@ class TestRunnerManager(threading.Thread):
         # This is started in the actual new thread
         self.logger = None
 
+        self.clean_exit = False
         self.test_count = 0
         self.unexpected_count = 0
 
@@ -376,6 +377,7 @@ class TestRunnerManager(threading.Thread):
                 clean = isinstance(self.state, RunnerManagerState.stop)
                 self.stop_runner(force=not clean)
                 self.teardown()
+                self.clean_exit = True
         # bug: this is not reached in the exception case
         self.logger.debug("TestRunnerManager main loop terminated")
 
@@ -829,6 +831,9 @@ class ManagerGroup(object):
         as possible"""
         self.stop_flag.set()
         self.logger.debug("Stop flag set in ManagerGroup")
+
+    def clean_exit(self):
+        return all(manager.clean_exit for manager in self.pool)
 
     def test_count(self):
         return sum(manager.test_count for manager in self.pool)
