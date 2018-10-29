@@ -277,6 +277,8 @@ def run_tests(config, test_paths, product, **kwargs):
                             logger.critical("Main thread got signal")
                             manager_group.stop()
                             raise
+                        # bug: if `manager_group` doesn't start correctly,
+                        # test_count and unexpected_count() will be zero.
                         logger.info("manager_group pool size: %d" % len(manager_group.pool))
                         logger.info("manager_group counts: %d / %d" % (manager_group.test_count(), manager_group.unexpected_count()))
                         test_count += manager_group.test_count()
