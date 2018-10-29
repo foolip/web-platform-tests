@@ -308,7 +308,6 @@ class TestRunnerManager(threading.Thread):
         # This is started in the actual new thread
         self.logger = None
 
-        self.clean_exit = False
         self.test_count = 0
         self.unexpected_count = 0
 
@@ -377,8 +376,6 @@ class TestRunnerManager(threading.Thread):
                 clean = isinstance(self.state, RunnerManagerState.stop)
                 self.stop_runner(force=not clean)
                 self.teardown()
-                self.clean_exit = True
-        # bug: this is not reached in the exception case
         self.logger.debug("TestRunnerManager main loop terminated")
 
     def wait_event(self):
@@ -821,10 +818,14 @@ class ManagerGroup(object):
             self.pool.add(manager)
         self.wait()
 
+    def is_alive(self):
+        """Boolean indicating whether any manager in the group is still alive"""
+        return any(manager.is_alive() for manager in self.pool)
+
     def wait(self):
         """Wait for all the managers in the group to finish"""
-        for manager in self.pool:
-            manager.join()
+        for item in self.pool:
+            item.join()
 
     def stop(self):
         """Set the stop flag so that all managers in the group stop as soon
@@ -832,11 +833,8 @@ class ManagerGroup(object):
         self.stop_flag.set()
         self.logger.debug("Stop flag set in ManagerGroup")
 
-    def clean_exit(self):
-        return all(manager.clean_exit for manager in self.pool)
-
     def test_count(self):
-        return sum(manager.test_count for manager in self.pool)
+        return sum(item.test_count for item in self.pool)
 
     def unexpected_count(self):
-        return sum(manager.unexpected_count for manager in self.pool)
+        return sum(item.unexpected_count for item in self.pool)
