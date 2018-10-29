@@ -1,5 +1,6 @@
+# This is the configuration file for Azure Pipelines, used to run tests on
+# macOS. Documentation to help understand this setup:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/index
 
 trigger: none # disable builds for branches
 
@@ -56,6 +57,6 @@ jobs:
     condition: variables.run_wptrunner_infrastructure
 
   - script: |
-      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level=debug --channel=preview safari_webdriver infrastructure/
+      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
     displayName: 'Run infrastructure/ tests'
     condition: variables.run_wptrunner_infrastructure
