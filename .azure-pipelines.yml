@@ -25,9 +25,28 @@ jobs:
 
   - script: |
       sudo easy_install pip
-      sudo pip install -U virtualenv
+      sudo pip install -U virtualenv tox
     displayName: 'Install Python packages'
-    condition: variables.run_wptrunner_infrastructure
+    condition: |
+      or(variables.run_tools_unittest,
+         variables.run_wptrunner_unittest,
+         variables.run_wpt_integration,
+         variables.run_wptrunner_infrastructure)
+
+  - script: |
+      tox -c tools/ -e py27
+    displayName: 'Run tools/ tests'
+    condition: variables.run_tools_unittest
+
+  - script: |
+      tox -c tools/wptrunner/ -e py27-base,py27-safari
+    displayName: 'Run tools/wptrunner/ tests'
+    condition: variables.run_wptrunner_unittest
+
+  - script: |
+      tox -c tools/wpt/ -e py27
+    displayName: 'Run tools/wpt/ tests'
+    condition: variables.run_wpt_integration
 
   # Installig Ahem in /Library/Fonts instead of using --install-fonts is a
   # workaround for https://github.com/web-platform-tests/wpt/issues/13803.
