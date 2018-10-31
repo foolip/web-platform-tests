@@ -25,7 +25,7 @@ jobs:
 
   - script: |
       sudo easy_install pip
-      sudo pip install -U virtualenv tox
+      sudo pip install -U setuptools tox virtualenv
     displayName: 'Install Python packages'
     condition: |
       or(variables.run_tools_unittest,
