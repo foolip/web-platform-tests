@@ -25,7 +25,8 @@ jobs:
 
   - script: |
       sudo easy_install pip
-      sudo pip install -U setuptools tox virtualenv
+      # --user python per https://stackoverflow.com/a/33687813
+      pip install -U tox virtualenv --user python
     displayName: 'Install Python packages'
     condition: |
       or(variables.run_tools_unittest,
