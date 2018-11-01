@@ -2,6 +2,7 @@
 # macOS. Documentation to help understand this setup:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/index
 #
 # In addition to this configuration file, the "Build pull requests from forks
 # of this repository" setting must also be enabled in the Azure DevOps project:
@@ -30,9 +31,58 @@ jobs:
 
   - script: |
       sudo easy_install pip
-      sudo pip install -U virtualenv
+      pip install --user tox virtualenv
+      echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
     displayName: 'Install Python packages'
-    condition: variables.run_wptrunner_infrastructure
+    condition: |
+      or(variables.run_tools_unittest,
+         variables.run_wptrunner_unittest,
+         variables.run_wpt_integration,
+         variables.run_wptrunner_infrastructure)
+
+  - script: tox -c tools/ -e py27 -- --junitxml=results.xml
+    displayName: 'Run tools/ unittests'
+    condition: variables.run_tools_unittest
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'tools/results.xml'
+      testRunTitle: 'tools/ pytest'
+    displayName: 'Publish tools/ unittests results'
+    condition: variables.run_tools_unittest
+
+  - script: tox -c tools/wptrunner/ -e py27-base,py27-safari -- --junitxml=results.xml
+    displayName: 'Run tools/wptrunner/ unittests'
+    condition: variables.run_wptrunner_unittest
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'tools/wptrunner/results.xml'
+      testRunTitle: 'tools/wptrunner/ pytest'
+    displayName: 'Publish tools/wptrunner/ unittests results'
+    condition: variables.run_wptrunner_unittest
+
+  - script: ./wpt make-hosts-file | sudo tee -a /etc/hosts
+    displayName: 'Update /etc/hosts'
+    condition: |
+      or(variables.run_wpt_integration,
+         variables.run_wptrunner_infrastructure)
+
+  - template: tools/ci/install-browsers.yml
+    parameters:
+      chrome: $(run_wpt_integration)
+      firefox: $(run_wpt_integration)
+
+  - script: tox -c tools/wpt/ -e py27 -- --junitxml=results.xml
+    displayName: 'Run tools/wpt/ tests'
+    condition: variables.run_wpt_integration
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'tools/wpt/results.xml'
+      testRunTitle: 'tools/wpt/ pytest'
+    displayName: 'Publish tools/wpt/ test results'
+    condition: variables.run_wpt_integration
 
   # Installig Ahem in /Library/Fonts instead of using --install-fonts is a
   # workaround for https://github.com/web-platform-tests/wpt/issues/13803.
@@ -48,8 +98,6 @@ jobs:
 
   - template: tools/ci/install-browsers.yml
     parameters:
-      chrome: $(run_wptrunner_infrastructure)
-      firefox: $(run_wptrunner_infrastructure)
       safari: $(run_wptrunner_infrastructure)
 
   - script: ./wpt make-hosts-file | sudo tee -a /etc/hosts
