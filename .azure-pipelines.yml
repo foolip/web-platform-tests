@@ -103,7 +103,7 @@ jobs:
     displayName: 'Install web-platform.test certificate'
     condition: variables.run_wptrunner_infrastructure
 
-  - template: tools/ci/install-browsers.yml
+  - template: tools/ci/azure/install-browsers.yml
     parameters:
       safari: $(run_wptrunner_infrastructure)
 
