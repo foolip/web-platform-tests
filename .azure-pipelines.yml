@@ -11,6 +11,25 @@
 trigger: none # disable builds for branches
 
 jobs:
+- job: Linux
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - checkout: self
+    fetchDepth: 50
+    submodules: false
+
+  - script: |
+      echo "Test jobs:"
+      ./wpt test-jobs | while read job; do
+        echo "$job"
+        echo "##vso[task.setvariable variable=$job;isOutput=true]true";
+      done
+    name: jobs
+    displayName: 'List test jobs'
+
 - job: macOS
 
   pool:
@@ -35,21 +54,9 @@ jobs:
       echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
     displayName: 'Install Python packages'
     condition: |
-      or(variables.run_tools_unittest,
-         variables.run_wptrunner_unittest,
+      or(variables.run_wptrunner_unittest,
          variables.run_wpt_integration,
          variables.run_wptrunner_infrastructure)
-
-  - script: tox -c tools/ -e py27 -- --junitxml=results.xml
-    displayName: 'Run tools/ unittests'
-    condition: variables.run_tools_unittest
-
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: 'tools/results.xml'
-      testRunTitle: 'tools/ pytest'
-    displayName: 'Publish tools/ unittests results'
-    condition: variables.run_tools_unittest
 
   - script: tox -c tools/wptrunner/ -e py27-base,py27-safari -- --junitxml=results.xml
     displayName: 'Run tools/wptrunner/ unittests'
@@ -119,3 +126,30 @@ jobs:
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
     displayName: 'Run infrastructure/ tests (Safari Technology Preview)'
     condition: variables.run_wptrunner_infrastructure
+
+- job: macOS-tools
+  dependsOn: Linux
+  condition: dependencies.Linux.outputs['jobs.tools_unittest']
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  steps:
+  - checkout: self
+    fetchDepth: 1
+    submodules: false
+
+  - script: |
+      sudo easy_install pip
+      pip install --user tox virtualenv
+      echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
+    displayName: 'Install Python packages'
+
+  - script: tox -c tools/ -e py27 -- --junitxml=results.xml
+    displayName: 'Run tools/ unittests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'tools/results.xml'
+      testRunTitle: 'tools/ pytest'
+    displayName: 'Publish tools/ unittests results'
