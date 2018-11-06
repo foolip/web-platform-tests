@@ -127,7 +127,7 @@ jobs:
     displayName: 'Run infrastructure/ tests (Safari Technology Preview)'
     condition: variables.run_wptrunner_infrastructure
 
-- job: macOS-tools
+- job: macOS_tools_unittest
   dependsOn: Linux
   condition: dependencies.Linux.outputs['jobs.tools_unittest']
 
