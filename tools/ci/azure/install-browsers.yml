@@ -12,7 +12,6 @@ steps:
   displayName: 'Install Firefox Nightly'
   condition: eq(parameters.firefox, 'true')
 
-- template: tools/ci/install-browsers.yml
 - script: |
     # Pin to STP 67, as SafariDriver isn't working in 68:
     # https://github.com/web-platform-tests/wpt/issues/13800
