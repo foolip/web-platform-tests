@@ -75,7 +75,7 @@ jobs:
       or(variables.run_wpt_integration,
          variables.run_wptrunner_infrastructure)
 
-  - template: tools/ci/install-browsers.yml
+  - template: tools/ci/azure/install-browsers.yml
     parameters:
       chrome: $(run_wpt_integration)
       firefox: $(run_wpt_integration)
