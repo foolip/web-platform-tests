@@ -1,17 +1,4 @@
-parameters:
-  chrome: false
-  firefox: false
-  safari: false
-
 steps:
-- script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install Homebrew/homebrew-cask-versions/google-chrome-dev
-  displayName: 'Install Chrome Dev'
-  condition: eq(parameters.chrome, 'true')
-
-- script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install Homebrew/homebrew-cask-versions/firefox-nightly
-  displayName: 'Install Firefox Nightly'
-  condition: eq(parameters.firefox, 'true')
-
 - script: |
     # Pin to STP 67, as SafariDriver isn't working in 68:
     # https://github.com/web-platform-tests/wpt/issues/13800
@@ -20,4 +7,3 @@ steps:
     sudo "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --enable
     defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1
   displayName: 'Install Safari Technology Preview'
-  condition: eq(parameters.safari, 'true')
