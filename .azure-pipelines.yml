@@ -19,9 +19,7 @@ jobs:
     vmImage: 'ubuntu-16.04'
 
   steps:
-  - checkout: self
-    fetchDepth: 50
-    submodules: false
+  - template: tools/ci/azure/checkout.yml
 
   - script: |
       echo "Test jobs:"
@@ -38,9 +36,7 @@ jobs:
     vmImage: 'macOS-10.13'
 
   steps:
-  - checkout: self
-    fetchDepth: 50
-    submodules: false
+  - template: tools/ci/azure/checkout.yml
 
   - script: |
       echo "Test jobs:"
@@ -138,9 +134,7 @@ jobs:
     vmImage: 'macOS-10.13'
 
   steps:
-  - checkout: self
-    fetchDepth: 1
-    submodules: false
+  - template: tools/ci/azure/checkout.yml
 
   - script: |
       sudo easy_install pip
