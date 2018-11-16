@@ -13,7 +13,7 @@
 trigger: none # disable builds for branches
 
 jobs:
-- job: Linux
+- job: decision
 
   pool:
     vmImage: 'ubuntu-16.04'
@@ -30,7 +30,10 @@ jobs:
     name: jobs
     displayName: 'List test jobs'
 
-- job: macOS
+- job: infrastructure_macOS
+  displayName: 'infrastructure/ tests (macOS)'
+  dependsOn: decision
+  condition: dependencies.decision.outputs['jobs.wptrunner_infrastructure']
 
   pool:
     vmImage: 'macOS-10.13'
@@ -39,40 +42,22 @@ jobs:
   - template: tools/ci/azure/checkout.yml
 
   - script: |
-      echo "Test jobs:"
-      ./wpt test-jobs | while read job; do
-        echo "$job"
-        echo "##vso[task.setvariable variable=$job;isOutput=true]true";
-      done
-    name: jobs
-    displayName: 'List test jobs'
-
-  - script: |
       sudo easy_install pip
       pip install --user tox virtualenv
       echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
     displayName: 'Install Python packages'
-    condition: |
-      or(variables.run_wptrunner_unittest,
-         variables.run_wpt_integration,
-         variables.run_wptrunner_infrastructure)
 
   - script: tox -c tools/wptrunner/ -e py27-base,py27-safari -- --junitxml=results.xml
     displayName: 'Run tools/wptrunner/ unittests'
-    condition: variables.run_wptrunner_unittest
 
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: 'tools/wptrunner/results.xml'
       testRunTitle: 'tools/wptrunner/ pytest'
     displayName: 'Publish tools/wptrunner/ unittests results'
-    condition: variables.run_wptrunner_unittest
 
   - script: ./wpt make-hosts-file | sudo tee -a /etc/hosts
     displayName: 'Update /etc/hosts'
-    condition: |
-      or(variables.run_wpt_integration,
-         variables.run_wptrunner_infrastructure)
 
   - template: tools/ci/azure/install-browsers.yml
     parameters:
@@ -81,20 +66,17 @@ jobs:
 
   - script: tox -c tools/wpt/ -e py27 -- --junitxml=results.xml
     displayName: 'Run tools/wpt/ tests'
-    condition: variables.run_wpt_integration
 
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: 'tools/wpt/results.xml'
       testRunTitle: 'tools/wpt/ pytest'
     displayName: 'Publish tools/wpt/ test results'
-    condition: variables.run_wpt_integration
 
   # Installig Ahem in /Library/Fonts instead of using --install-fonts is a
   # workaround for https://github.com/web-platform-tests/wpt/issues/13803.
   - script: sudo cp fonts/Ahem.ttf /Library/Fonts
     displayName: 'Install Ahem font'
-    condition: variables.run_wptrunner_infrastructure
 
   - script: |
       # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
@@ -108,27 +90,23 @@ jobs:
 
   - script: ./wpt make-hosts-file | sudo tee -a /etc/hosts
     displayName: 'Update /etc/hosts'
-    condition: variables.run_wptrunner_infrastructure
 
   - script: ./wpt manifest
     displayName: 'Update manifest'
-    condition: variables.run_wptrunner_infrastructure
 
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=dev chrome infrastructure/
     displayName: 'Run infrastructure/ tests (Chrome Dev)'
-    condition: variables.run_wptrunner_infrastructure
 
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=nightly firefox infrastructure/
     displayName: 'Run infrastructure/ tests (Firefox Nightly)'
-    condition: variables.run_wptrunner_infrastructure
 
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
     displayName: 'Run infrastructure/ tests (Safari Technology Preview)'
-    condition: variables.run_wptrunner_infrastructure
 
-- job: macOS_tools_unittest
-  dependsOn: Linux
-  condition: dependencies.Linux.outputs['jobs.tools_unittest']
+- job: tools_unittest_macOS
+  displayName: 'tools/ unittests (macOS)'
+  dependsOn: decision
+  condition: dependencies.decision.outputs['jobs.tools_unittest']
 
   pool:
     vmImage: 'macOS-10.13'
