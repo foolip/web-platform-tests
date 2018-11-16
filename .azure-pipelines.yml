@@ -56,8 +56,7 @@ jobs:
       testRunTitle: 'tools/wptrunner/ pytest'
     displayName: 'Publish tools/wptrunner/ unittests results'
 
-  - script: ./wpt make-hosts-file | sudo tee -a /etc/hosts
-    displayName: 'Update /etc/hosts'
+  - template: tools/ci/azure/update_hosts.yml
 
   - template: tools/ci/azure/install-browsers.yml
     parameters:
@@ -87,8 +86,7 @@ jobs:
     parameters:
       safari: $(run_wptrunner_infrastructure)
 
-  - script: ./wpt make-hosts-file | sudo tee -a /etc/hosts
-    displayName: 'Update /etc/hosts'
+  - template: tools/ci/azure/update_hosts.yml
 
   - script: ./wpt manifest
     displayName: 'Update manifest'
