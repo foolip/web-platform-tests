@@ -72,19 +72,11 @@ jobs:
       testRunTitle: 'tools/wpt/ pytest'
     displayName: 'Publish tools/wpt/ test results'
 
-  # Installig Ahem in /Library/Fonts instead of using --install-fonts is a
-  # workaround for https://github.com/web-platform-tests/wpt/issues/13803.
-  - script: sudo cp fonts/Ahem.ttf /Library/Fonts
-    displayName: 'Install Ahem font'
-
-  - script: |
-      # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
-      sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
-    displayName: 'Install web-platform.test certificate'
-
-  - template: tools/ci/azure/install-browsers.yml
-    parameters:
-      safari: $(run_wptrunner_infrastructure)
+  - template: tools/ci/azure/install_fonts.yml
+  - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/install_chrome.yml
+  - template: tools/ci/azure/install_firefox.yml
+  - template: tools/ci/azure/install_safari.yml
 
   - template: tools/ci/azure/update_hosts.yml
 
