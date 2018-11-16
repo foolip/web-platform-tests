@@ -1,0 +1,13 @@
+parameters:
+  os: ''
+
+steps:
+- ${{ if eq(parameters.os, 'macOS') }}:
+  - script: |
+      sudo easy_install pip
+    displayName: 'Install pip'
+- ${{ if ne(parameters.os, 'Windows') }}:
+  - script: |
+      sudo pip install virtualenv
+    displayName: 'Install virtualenv'
+# TODO: Windows

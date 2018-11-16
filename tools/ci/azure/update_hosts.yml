@@ -1,0 +1,8 @@
+parameters:
+  os: ''
+
+steps:
+- ${{ if ne(parameters.os, 'Windows') }}:
+  - script: ./wpt make-hosts-file | sudo tee -a /etc/hosts
+    displayName: 'Update /etc/hosts'
+# TODO: Windows
