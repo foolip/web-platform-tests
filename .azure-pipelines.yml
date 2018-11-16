@@ -1,6 +1,7 @@
 # This is the configuration file for Azure Pipelines, used to run tests on
 # macOS. Documentation to help understand this setup:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/multiple-phases
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/index
 #
