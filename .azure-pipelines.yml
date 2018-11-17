@@ -108,10 +108,10 @@ jobs:
       testRunTitle: 'tools/wptrunner/ pytest'
     displayName: 'Publish tools/wptrunner/ unittests results'
 
-- job: tools_unittest_macOS
+- job: wpt_integration_macOS
   displayName: 'tools/wpt/ tests (macOS)'
   dependsOn: root
-  condition: dependencies.root.outputs['test_jobs.tools_unittest']
+  condition: dependencies.root.outputs['test_jobs.wpt_integration']
 
   pool:
     vmImage: 'macOS-10.13'
