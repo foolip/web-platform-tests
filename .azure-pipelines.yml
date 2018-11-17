@@ -76,13 +76,13 @@ jobs:
       packages: tox virtualenv
 
   - script: tox -c tools/ -e py27 -- --junitxml=results.xml
-    displayName: 'Run tools/ unittests'
+    displayName: 'Run tests'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: 'tools/results.xml'
       testRunTitle: 'tools/ pytest'
-    displayName: 'Publish tools/ unittests results'
+    displayName: 'Publish results'
 
 - job: wptrunner_unittest_macOS
   displayName: 'tools/wptrunner/ unittests (macOS)'
@@ -100,13 +100,13 @@ jobs:
       packages: tox virtualenv
 
   - script: tox -c tools/wptrunner/ -e py27-base,py27-safari -- --junitxml=results.xml
-    displayName: 'Run tools/wptrunner/ unittests'
+    displayName: 'Run tests'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: 'tools/wptrunner/results.xml'
       testRunTitle: 'tools/wptrunner/ pytest'
-    displayName: 'Publish tools/wptrunner/ unittests results'
+    displayName: 'Publish results'
 
 - job: wpt_integration_macOS
   displayName: 'tools/wpt/ tests (macOS)'
@@ -128,10 +128,10 @@ jobs:
   - template: tools/ci/azure/update_hosts.yml
 
   - script: tox -c tools/wpt/ -e py27 -- --junitxml=results.xml
-    displayName: 'Run tools/wpt/ tests'
+    displayName: 'Run tests'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: 'tools/wpt/results.xml'
       testRunTitle: 'tools/wpt/ pytest'
-    displayName: 'Publish tools/wpt/ test results'
+    displayName: 'Publish results'
