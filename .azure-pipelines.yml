@@ -83,6 +83,7 @@ jobs:
       testResultsFiles: 'tools/results.xml'
       testRunTitle: 'tools/ pytest'
     displayName: 'Publish results'
+    condition: succeededOrFailed()
 
 - job: wptrunner_unittest_macOS
   displayName: 'tools/wptrunner/ unittests (macOS)'
@@ -107,6 +108,7 @@ jobs:
       testResultsFiles: 'tools/wptrunner/results.xml'
       testRunTitle: 'tools/wptrunner/ pytest'
     displayName: 'Publish results'
+    condition: succeededOrFailed()
 
 - job: wpt_integration_macOS
   displayName: 'tools/wpt/ tests (macOS)'
@@ -135,3 +137,4 @@ jobs:
       testResultsFiles: 'tools/wpt/results.xml'
       testRunTitle: 'tools/wpt/ pytest'
     displayName: 'Publish results'
+    condition: succeededOrFailed()
