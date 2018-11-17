@@ -41,11 +41,9 @@ jobs:
   steps:
   - template: tools/ci/azure/checkout.yml
 
-  - script: |
-      sudo easy_install pip
-      pip install --user tox virtualenv
-      echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
-    displayName: 'Install Python packages'
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: tox virtualenv
 
   - script: tox -c tools/wptrunner/ -e py27-base,py27-safari -- --junitxml=results.xml
     displayName: 'Run tools/wptrunner/ unittests'
@@ -103,11 +101,9 @@ jobs:
   steps:
   - template: tools/ci/azure/checkout.yml
 
-  - script: |
-      sudo easy_install pip
-      pip install --user tox virtualenv
-      echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
-    displayName: 'Install Python packages'
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: tox virtualenv
 
   - script: tox -c tools/ -e py27 -- --junitxml=results.xml
     displayName: 'Run tools/ unittests'
