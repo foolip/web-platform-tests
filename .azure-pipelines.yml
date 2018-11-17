@@ -119,8 +119,6 @@ jobs:
     vmImage: 'macOS-10.13'
 
   steps:
-  - template: tools/ci/azure/checkout.yml
-
   - template: tools/ci/azure/pip_install.yml
     parameters:
       packages: tox virtualenv
