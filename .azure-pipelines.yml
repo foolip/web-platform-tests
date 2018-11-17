@@ -40,42 +40,12 @@ jobs:
 
   steps:
   - template: tools/ci/azure/checkout.yml
-
   - template: tools/ci/azure/pip_install.yml
-    parameters:
-      packages: tox virtualenv
-
-  - script: tox -c tools/wptrunner/ -e py27-base,py27-safari -- --junitxml=results.xml
-    displayName: 'Run tools/wptrunner/ unittests'
-
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: 'tools/wptrunner/results.xml'
-      testRunTitle: 'tools/wptrunner/ pytest'
-    displayName: 'Publish tools/wptrunner/ unittests results'
-
-  - template: tools/ci/azure/update_hosts.yml
-
-  - template: tools/ci/azure/install-browsers.yml
-    parameters:
-      chrome: $(run_wpt_integration)
-      firefox: $(run_wpt_integration)
-
-  - script: tox -c tools/wpt/ -e py27 -- --junitxml=results.xml
-    displayName: 'Run tools/wpt/ tests'
-
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: 'tools/wpt/results.xml'
-      testRunTitle: 'tools/wpt/ pytest'
-    displayName: 'Publish tools/wpt/ test results'
-
   - template: tools/ci/azure/install_fonts.yml
   - template: tools/ci/azure/install_certs.yml
   - template: tools/ci/azure/install_chrome.yml
   - template: tools/ci/azure/install_firefox.yml
   - template: tools/ci/azure/install_safari.yml
-
   - template: tools/ci/azure/update_hosts.yml
 
   - script: ./wpt manifest
@@ -113,3 +83,55 @@ jobs:
       testResultsFiles: 'tools/results.xml'
       testRunTitle: 'tools/ pytest'
     displayName: 'Publish tools/ unittests results'
+
+- job: wptrunner_unittest_macOS
+  displayName: 'tools/wptrunner/ unittests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.wptrunner_unittest']
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  steps:
+  - template: tools/ci/azure/checkout.yml
+
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: tox virtualenv
+
+  - script: tox -c tools/wptrunner/ -e py27-base,py27-safari -- --junitxml=results.xml
+    displayName: 'Run tools/wptrunner/ unittests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'tools/wptrunner/results.xml'
+      testRunTitle: 'tools/wptrunner/ pytest'
+    displayName: 'Publish tools/wptrunner/ unittests results'
+
+- job: tools_unittest_macOS
+  displayName: 'tools/wpt/ tests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.tools_unittest']
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  steps:
+  - template: tools/ci/azure/checkout.yml
+
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: tox virtualenv
+
+  - template: tools/ci/azure/install_chrome.yml
+  - template: tools/ci/azure/install_firefox.yml
+  - template: tools/ci/azure/update_hosts.yml
+
+  - script: tox -c tools/wpt/ -e py27 -- --junitxml=results.xml
+    displayName: 'Run tools/wpt/ tests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'tools/wpt/results.xml'
+      testRunTitle: 'tools/wpt/ pytest'
+    displayName: 'Publish tools/wpt/ test results'
