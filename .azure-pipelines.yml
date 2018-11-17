@@ -14,6 +14,7 @@ trigger: none # disable builds for branches
 
 jobs:
 - job: root
+  displayName: './wpt test-jobs'
 
   pool:
     vmImage: 'ubuntu-16.04'
@@ -22,13 +23,12 @@ jobs:
   - template: tools/ci/azure/checkout.yml
 
   - script: |
-      echo "Test jobs:"
       ./wpt test-jobs | while read job; do
         echo "$job"
         echo "##vso[task.setvariable variable=$job;isOutput=true]true";
       done
     name: test_jobs
-    displayName: 'List test jobs'
+    displayName: './wpt test-jobs'
 
 - job: infrastructure_macOS
   displayName: 'infrastructure/ tests (macOS)'
