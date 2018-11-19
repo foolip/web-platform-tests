@@ -1,0 +1,9 @@
+parameters:
+  packages: ''
+
+steps:
+- script: |
+    sudo easy_install pip
+    pip install --user ${{ parameters.packages }}
+    echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
+  displayName: 'Install Python packages'
